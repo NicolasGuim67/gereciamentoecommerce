@@ -3,20 +3,27 @@ package com.loopcodes.gereciamentoecommerce.Service;
 
 import com.loopcodes.gereciamentoecommerce.Entitys.User;
 import com.loopcodes.gereciamentoecommerce.Repository.UserRepository;
+import com.loopcodes.gereciamentoecommerce.dto.mapper.UserDTOMapper;
 import com.loopcodes.gereciamentoecommerce.dto.response.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserDTOMapper userDTOMapper;
+
     public UserDTO gfindByIdDTO(Long Id) {
-        User user = userRepository.findById(Id).orElse(null);
-        return convertToDTO(user);
+       // User user = userRepository.findById(Id).orElse(null);
+        return userRepository.findById(Id)
+                .map(userDTOMapper)
+                .orElseThrow(()->new RuntimeException("User not found with the Id:" + Id));
     }
 
     public User create(User user) {
@@ -32,19 +39,33 @@ public class UserService {
         return null;
     }
 
-    private User convertToEntity(UserDTO userDTO) {
-
+    private UserDTO convertToEntity(User user) {
+        if(user==null)
         return null;
+        return userDTOMapper.apply(user);
+    }
+    private User convertToEntity(UserDTO userDTO){
+     if(userDTO==null)return null;
+
+     User user = new User();
+     user.setName(userDTO.name());
+     user.setEmail(userDTO.email());
+     user.setCpf(userDTO.cpf());
+     return user;
     }
 
+    public List<UserDTO> findAllDTO(){
+        return userRepository.findAll()
+                .stream()
+                .map(userDTOMapper)
+                .collect(Collectors.toList());}
 
-
-    public List<User> findAll(){return userRepository.findAll();}
+    public List<User> findAll(){
+        return userRepository.findAll();
+    }
 
     public User findById(Long id){
         return userRepository.findById(id)
-
-
                 .orElseThrow(()-> new RuntimeException("User not finded"));
     }
     public User update(Long id, User userDetails){

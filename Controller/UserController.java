@@ -5,6 +5,7 @@ import com.loopcodes.gereciamentoecommerce.Entitys.Product;
 import com.loopcodes.gereciamentoecommerce.Entitys.User;
 import com.loopcodes.gereciamentoecommerce.Service.UserService;
 import com.loopcodes.gereciamentoecommerce.dto.response.UserDTO;
+import jakarta.persistence.Id;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,16 +20,16 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/{id}")
+    @PostMapping()
     public User createUser(@RequestBody User user){
         return userService.create(user);
     }
     @GetMapping
-    public List<User> getAllProduct(){return userService.findAll();}
+    public List<UserDTO> getAllUsers(){return userService.findAllDTO();}
 
     @GetMapping("/{id}")
-    public User getUser(@PathVariable Long id){
-        return userService.findById(id);
+    public UserDTO getUser(@PathVariable Long id){
+        return userService.gfindByIdDTO(id);
     }
     @PutMapping("/{id}")
     public User updateUser(@PathVariable Long id,@RequestBody User userDetails){
